@@ -1,0 +1,44 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo "Installing dependencies..."
+      - npm ci
+
+  pre_build:
+    commands:
+      - echo "Fetching environment variables from SSM..."
+      - export VITE_API_BASE_URL=$(aws ssm get-parameter --name "/mcart/prod/VITE_API_BASE_URL" --with-decryption --query Parameter.Value --output text)
+      - export VITE_COGNITO_REGION=$(aws ssm get-parameter --name "/mcart/prod/VITE_COGNITO_REGION" --with-decryption --query Parameter.Value --output text)
+      - export VITE_COGNITO_USER_POOL_ID=$(aws ssm get-parameter --name "/mcart/prod/VITE_COGNITO_USER_POOL_ID" --with-decryption --query Parameter.Value --output text)
+      - export VITE_COGNITO_APP_CLIENT_ID=$(aws ssm get-parameter --name "/mcart/prod/VITE_COGNITO_APP_CLIENT_ID" --with-decryption --query Parameter.Value --output text)
+      - export VITE_COGNITO_DOMAIN=$(aws ssm get-parameter --name "/mcart/prod/VITE_COGNITO_DOMAIN" --with-decryption --query Parameter.Value --output text)
+      - export VITE_APP_URL=$(aws ssm get-parameter --name "/mcart/prod/VITE_APP_URL" --with-decryption --query Parameter.Value --output text)
+      - echo "VITE_API_BASE_URL=$VITE_API_BASE_URL" >> .env.production
+      - echo "VITE_COGNITO_REGION=$VITE_COGNITO_REGION" >> .env.production
+      - echo "VITE_COGNITO_USER_POOL_ID=$VITE_COGNITO_USER_POOL_ID" >> .env.production
+      - echo "VITE_COGNITO_APP_CLIENT_ID=$VITE_COGNITO_APP_CLIENT_ID" >> .env.production
+      - echo "VITE_COGNITO_DOMAIN=$VITE_COGNITO_DOMAIN" >> .env.production
+      - echo "VITE_APP_URL=$VITE_APP_URL" >> .env.production
+
+  build:
+    commands:
+      - echo "Building for production..."
+      - npm run build
+
+  post_build:
+    commands:
+      - echo "Uploading to S3..."
+      - aws s3 sync dist/ s3://$S3_BUCKET --delete --cache-control "max-age=86400"
+      - aws s3 cp dist/index.html s3://$S3_BUCKET/index.html --cache-control "no-cache,no-store,must-revalidate"
+      - echo "Invalidating CloudFront cache..."
+      - aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths "/*"
+      - echo "✅ Deployment complete"
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: dist
