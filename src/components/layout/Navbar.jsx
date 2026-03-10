@@ -42,8 +42,7 @@ export default function Navbar() {
 
   const cartCount = cart?.totalItems || 0
   const wishlistCount = wishlistItems.length
-  //const username = user?.username?.split('@')[0] || user?.signInDetails?.loginId?.split('@')[0] || 'Profile'
-  const username = user?.signInDetails?.loginId?.split('@')[0] || user?.username?.split('@')[0] || 'Profile'
+  const username = user?.session?.tokens?.idToken?.payload?.name || user?.signInDetails?.loginId?.split('@')[0] || user?.name || user?.username?.split('@')[0] || 'Profile'
 
   const handleMouseEnter = (cat) => {
     clearTimeout(menuTimeout.current)
@@ -58,7 +57,11 @@ export default function Navbar() {
       <div className="max-w-screen-xl mx-auto px-4 flex items-center gap-4 h-14">
         {/* Logo */}
         <Link to="/" className="flex-shrink-0 mr-2">
-          <span className="text-2xl font-black text-primary tracking-tight">MCart</span>
+          <img
+            src="/images/mcart_logo_streetwear.png"
+            alt="MCart Fashion Store"
+            className="h-9 w-auto object-contain"
+          />
         </Link>
 
         {/* Category Nav */}

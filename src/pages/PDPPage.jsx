@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { ShieldCheck, RotateCcw, Truck, Star, Heart } from 'lucide-react'
-import { getProductBySlug } from '../api/productApi'
+import { getProductBySlug, filterProducts } from '../api/productApi'
 import { getVariantsByProduct, getVariantById, getLowStockVariants } from '../api/variantApi'
-import { isProductInCategory } from '../api/mappingApi'
+import { getCategoriesForProduct } from '../api/mappingApi'
 import ProductGallery from '../components/product/ProductGallery'
 import SizeSelector from '../components/product/SizeSelector'
 import ColorSelector from '../components/product/ColorSelector'
@@ -15,6 +15,82 @@ import { useWishlist } from '../hooks/useWishlist'
 import { formatPrice } from '../utils/formatPrice'
 import clsx from 'clsx'
 
+// ── Related Product Card ──────────────────────────────────────────────────────
+function RelatedProductCard({ product }) {
+  const { isInWishlist, toggleWishlist } = useWishlist()
+  const wishlisted = isInWishlist(product.productId)
+  const price = product.salePrice || product.basePrice
+  const mrp = product.basePrice
+  const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : product.discountPercentage || 0
+
+  return (
+    <Link
+      to={`/product/${product.slug}`}
+      className="group relative flex flex-col bg-white rounded-sm overflow-hidden border border-transparent hover:border-border hover:shadow-md transition-all"
+    >
+      {/* Image */}
+      <div className="relative bg-surface overflow-hidden" style={{ paddingBottom: '133%' }}>
+        <img
+          src={product.primaryImage || '/placeholder-product.jpg'}
+          alt={product.name}
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => { e.target.src = '/placeholder-product.jpg' }}
+        />
+        {discount > 0 && (
+          <span className="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
+            {discount}% OFF
+          </span>
+        )}
+        {/* Wishlist button */}
+        <button
+          onClick={(e) => { e.preventDefault(); toggleWishlist(product.productId) }}
+          className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <Heart
+            size={14}
+            className={wishlisted ? 'fill-primary text-primary' : 'text-muted'}
+          />
+        </button>
+      </div>
+
+      {/* Info */}
+      <div className="p-2.5 flex flex-col gap-1">
+        <p className="text-xs font-black text-dark truncate">{product.brandName}</p>
+        <p className="text-xs text-muted truncate">{product.name}</p>
+        <div className="flex items-baseline gap-1.5 mt-0.5">
+          <span className="text-sm font-bold text-dark">{formatPrice(price)}</span>
+          {mrp > price && (
+            <span className="text-[11px] text-muted line-through">{formatPrice(mrp)}</span>
+          )}
+        </div>
+        {product.ratingAverage > 0 && (
+          <div className="flex items-center gap-1 mt-0.5">
+            <span className="flex items-center gap-0.5 bg-[#14958F] text-white text-[10px] px-1.5 py-0.5 rounded font-bold">
+              <Star size={8} fill="white" /> {product.ratingAverage.toFixed(1)}
+            </span>
+            <span className="text-[10px] text-muted">{(product.ratingCount || 0).toLocaleString()}</span>
+          </div>
+        )}
+      </div>
+    </Link>
+  )
+}
+
+// ── Related Products Skeleton ─────────────────────────────────────────────────
+function RelatedProductSkeleton() {
+  return (
+    <div className="flex flex-col bg-white rounded-sm overflow-hidden border border-border animate-pulse">
+      <div className="bg-surface" style={{ paddingBottom: '133%' }} />
+      <div className="p-2.5 flex flex-col gap-2">
+        <div className="h-3 bg-surface rounded w-2/3" />
+        <div className="h-3 bg-surface rounded w-full" />
+        <div className="h-4 bg-surface rounded w-1/3" />
+      </div>
+    </div>
+  )
+}
+
+// ── Main PDP Page ─────────────────────────────────────────────────────────────
 export default function PDPPage() {
   const { slug } = useParams()
   const [product, setProduct] = useState(null)
@@ -24,11 +100,17 @@ export default function PDPPage() {
   const [selectedColor, setSelectedColor] = useState(null)
   const [lowStockIds, setLowStockIds] = useState(new Set())
   const [loading, setLoading] = useState(true)
+
+  // Related products state
+  const [relatedProducts, setRelatedProducts] = useState([])
+  const [relatedLoading, setRelatedLoading] = useState(false)
+
   const { handleAddToCart } = useCart()
   const { isInWishlist, toggleWishlist } = useWishlist()
 
   useEffect(() => {
     setLoading(true)
+    setRelatedProducts([])
     getProductBySlug(slug)
       .then(async (r) => {
         const p = r.data
@@ -51,6 +133,28 @@ export default function PDPPage() {
         if (lowRes.status === 'fulfilled') {
           setLowStockIds(new Set((lowRes.value.data || []).map(v => v.variantId)))
         }
+
+        // Fetch related products via category
+        setRelatedLoading(true)
+        getCategoriesForProduct(p.productId)
+          .then(async (catRes) => {
+            console.log('[Related] getCategoriesForProduct raw:', catRes.data)
+            // API returns a plain string categoryId
+            const categoryId = typeof catRes.data === 'string'
+              ? catRes.data
+              : catRes.data?.categoryId || catRes.data?.[0]?.categoryId || catRes.data?.[0]
+            console.log('[Related] resolved categoryId:', categoryId)
+            if (!categoryId) return
+            const prodRes = await filterProducts({ categoryId })
+            console.log('[Related] filterProducts raw:', prodRes.data)
+            const others = (prodRes.data?.content || prodRes.data || [])
+              .filter(rp => rp.productId !== p.productId)
+              .slice(0, 8)
+            console.log('[Related] final list:', others)
+            setRelatedProducts(others)
+          })
+          .catch((err) => console.error('[Related] error:', err))
+          .finally(() => setRelatedLoading(false))
       })
       .finally(() => setLoading(false))
   }, [slug])
@@ -195,6 +299,34 @@ export default function PDPPage() {
           )}
         </div>
       </div>
+
+      {/* ── Related Products ───────────────────────────────────────────────── */}
+      {(relatedLoading || relatedProducts.length > 0) && (
+        <section className="mt-14 border-t border-surface pt-10">
+          <div className="flex items-baseline justify-between mb-6">
+            <h2 className="text-lg font-black text-dark uppercase tracking-wide">
+              More From This Products
+            </h2>
+            {!relatedLoading && relatedProducts.length > 0 && (
+              <Link
+                to={`/category/${relatedProducts[0]?.slug || ''}`}
+                className="text-sm font-semibold text-primary hover:underline"
+              >
+                View All →
+              </Link>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {relatedLoading
+              ? Array.from({ length: 8 }).map((_, i) => <RelatedProductSkeleton key={i} />)
+              : relatedProducts.map(rp => (
+                  <RelatedProductCard key={rp.productId} product={rp} />
+                ))
+            }
+          </div>
+        </section>
+      )}
     </div>
   )
 }

@@ -6,7 +6,7 @@ import { Skeleton } from '../common/Skeleton'
 const FALLBACK_IMAGES = {
   men: '/images/categories/men.jpg',
   women: '/images/categories/women.jpg',
-  kids: '/images/categories/kids.jpg',
+  kids: '/images/categories/Kids.jpg',
   accessories: '/images/categories/accessories.jpg',
 }
 

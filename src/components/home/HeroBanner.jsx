@@ -34,15 +34,15 @@ export default function HeroBanner() {
           src={banner.image}
           alt={banner.title}
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-400"
-          style={{ opacity: isAnimating ? 0.7 : 1 }}
+          style={{ opacity: isAnimating ? 1 : 1 }}
           onError={(e) => { e.target.style.display = 'none' }}
         />
-        {/* Fallback text overlay when image is missing */}
+        {/* Fallback text overlay when image is missing 
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <h2 className="text-4xl md:text-6xl font-black text-dark opacity-5">{banner.title}</h2>
-        </div>
+        </div>*/}
         {/* CTA overlay */}
-        <div className="absolute bottom-8 left-10 hidden md:block">
+        <div className="absolute bottom-8 right-10 hidden md:block">
           <Link
             to={banner.link}
             className="bg-dark text-white px-8 py-3 text-sm font-bold hover:bg-primary transition-colors inline-block"

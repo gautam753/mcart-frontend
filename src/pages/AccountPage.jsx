@@ -17,7 +17,7 @@ const NAV = [
 export default function AccountPage() {
   const [active, setActive] = useState('profile')
   const { user } = useAuthStore()
-  const username = user?.username?.split('@')[0] || user?.signInDetails?.loginId?.split('@')[0] || 'User'
+  const username = user?.session?.tokens?.idToken?.payload?.name || user?.username?.split('@')[0] || user?.signInDetails?.loginId?.split('@')[0] || 'User'
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 py-8">
