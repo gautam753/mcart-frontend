@@ -9,6 +9,7 @@ const BANNERS = [
 ]
 
 
+
 export default function HeroBanner() {
   const [current, setCurrent] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
