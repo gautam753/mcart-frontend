@@ -4,8 +4,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const BANNERS = [
   { id: 1, image: '/images/banners/banner1.jpg', title: 'New Arrivals', subtitle: 'Explore latest trends', cta: 'Shop Now', link: '/category/new-arrivals', bg: '#FFF0F3' },
-  { id: 2, image: '/images/banners/banner2.jpg', title: 'End of Season Sale', subtitle: 'Up to 50% off', cta: 'Shop Sale', link: '/category/sale', bg: '#EEF2FF' },
-  { id: 3, image: '/images/banners/banner3.jpg', title: 'Top Brands', subtitle: 'All your favourites in one place', cta: 'Explore', link: '/category/brands', bg: '#FFF7ED' },
+  { id: 2, image: '/images/banners/banner2.jpg', title: 'End of Season Sale', subtitle: 'Up to 50% off', cta: 'Shop Sale', link: '/category/sale-clearance', bg: '#EEF2FF' },
+  { id: 3, image: '/images/banners/banner3.jpg', title: 'Top Brands', subtitle: 'All your favourites in one place', cta: 'Explore', link: '/category/best-sellers', bg: '#FFF7ED' },
 ]
 
 export default function HeroBanner() {

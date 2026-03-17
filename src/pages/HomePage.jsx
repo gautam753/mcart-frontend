@@ -32,7 +32,7 @@ export default function HomePage() {
       <div className="h-px bg-surface" />
       <ProductCarousel title="New Arrivals" products={newArrivals} viewAllLink="/category/new-arrivals" loading={loading} />
       <div className="h-2 bg-surface my-2" />
-      <ProductCarousel title="Trending Now" products={trending} viewAllLink="/category/trending" loading={loading} />
+      <ProductCarousel title="Trending Now" products={trending} viewAllLink="/category/trending-now" loading={loading} />
       {onSale.length > 0 && (
         <>
           <div className="max-w-screen-xl mx-auto px-4 my-6">
@@ -41,7 +41,9 @@ export default function HomePage() {
               <p className="text-sm mt-2 opacity-90">Upto 50% off — Limited time only</p>
             </div>
           </div>
-          <ProductCarousel title="Best Deals" products={onSale} viewAllLink="/category/sale" />
+          <ProductCarousel title="Best Deals" products={onSale} viewAllLink="/category/sale-clearance" />
+          <ProductCarousel title="Under ₹499" products={onSale} viewAllLink="/category/under-499" />
+          <ProductCarousel title="Best Sellers" products={onSale} viewAllLink="/category/best-sellers" />
         </>
       )}
     </div>
