@@ -8,6 +8,7 @@ const BANNERS = [
   { id: 3, image: '/images/banners/banner3.jpg', title: 'Top Brands', subtitle: 'All your favourites in one place', cta: 'Explore', link: '/category/best-sellers', bg: '#FFF7ED' },
 ]
 
+
 export default function HeroBanner() {
   const [current, setCurrent] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
