@@ -307,14 +307,14 @@ export default function PDPPage() {
             <h2 className="text-lg font-black text-dark uppercase tracking-wide">
               More From This Products
             </h2>
-            {!relatedLoading && relatedProducts.length > 0 && (
+            {/*{!relatedLoading && relatedProducts.length > 0 && (
               <Link
                 to={`/category/${relatedProducts[0]?.slug || ''}`}
                 className="text-sm font-semibold text-primary hover:underline"
               >
                 View All →
               </Link>
-            )}
+            )}*/}
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
