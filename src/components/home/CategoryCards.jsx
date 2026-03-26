@@ -8,6 +8,7 @@ const FALLBACK_IMAGES = {
   women: '/images/categories/women.jpg',
   kids: '/images/categories/Kids.jpg',
   accessories: '/images/categories/accessories.jpg',
+  footwear: '/images/categories/Footwear.jpg',
 }
 
 export default function CategoryCards() {

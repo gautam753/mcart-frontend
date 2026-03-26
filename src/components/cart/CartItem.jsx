@@ -2,18 +2,15 @@ import { Trash2, Minus, Plus } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../../hooks/useCart'
-import { useCartStore } from '../../store/cartStore'
-import { addToCart } from '../../api/cartApi'
 import { getProductById } from '../../api/productApi'
 import { formatPrice } from '../../utils/formatPrice'
 
 export default function CartItem({ item }) {
-  const { handleRemoveFromCart } = useCart()
-  const { setCart } = useCartStore()
-  const [loading, setLoading] = useState(false)
+  const { handleRemoveFromCart, handleAddToCart, refreshCart } = useCart()
   const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(false)
 
-  // Fetch product details to get image, name, brand, slug
+  // Fetch product details for image/name/brand
   useEffect(() => {
     if (!item.productId) return
     getProductById(item.productId)
@@ -24,29 +21,27 @@ export default function CartItem({ item }) {
   const changeQty = async (delta) => {
     if (loading) return
     if (item.quantity + delta < 1) {
-      handleRemoveFromCart(item.productId, item.variantId)
+      await handleRemoveFromCart(item.productId, item.variantId)
       return
     }
     setLoading(true)
     try {
-      const res = await addToCart({
-        productId: item.productId,
-        variantId: item.variantId,
-        quantity: delta,
-      })
-      setCart(res.data)
-    } catch (_) {}
-    finally { setLoading(false) }
+      // Use handleAddToCart from useCart hook — it calls refreshCart internally
+      // which re-enriches items and updates the store correctly
+      await handleAddToCart(item.productId, item.variantId, delta)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const image = product?.primaryImage || '/placeholder-product.jpg'
-  const name = product?.name || item.productId
-  const brandName = product?.brandName || ''
-  const slug = product?.slug || null
+  const image     = product?.primaryImage || '/placeholder-product.jpg'
+  const name      = product?.name         || item.productId
+  const brandName = product?.brandName    || ''
+  const slug      = product?.slug         || null
 
   return (
     <div className="flex gap-3 py-4">
-      {/* Image — clickable if slug exists */}
+      {/* Image */}
       {slug ? (
         <Link to={`/product/${slug}`} className="flex-shrink-0">
           <img

@@ -9,6 +9,8 @@ import WishlistPage from '../pages/WishlistPage'
 import AccountPage from '../pages/AccountPage'
 import SkuSearchPage from '../pages/SkuSearchPage'
 import OrdersPage from '../pages/OrdersPage'
+import OrderDetailPage from '../pages/OrderDetailPage'
+import OrderConfirmationPage from '../pages/OrderConfirmationPage'
 import CheckoutPage from '../pages/CheckoutPage'
 import NotFoundPage from '../pages/NotFoundPage'
 
@@ -26,6 +28,8 @@ export default function AppRouter() {
             <Route path="/wishlist" element={<WishlistPage />} />
             <Route path="/account" element={<AccountPage />} />
             <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:orderId" element={<OrderDetailPage />} />
+            <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />

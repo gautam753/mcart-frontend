@@ -26,8 +26,27 @@ export default function Navbar() {
   const menuTimeout = useRef(null)
   const debouncedSearch = useDebounce(searchQuery, 350)
 
+  const CATEGORY_ORDER = ['Men', 'Women', 'Kids', 'Footwear', 'Special Collection']
+
   useEffect(() => {
-    getCategoryTree().then(r => setCategories(r.data || [])).catch(() => {})
+    getCategoryTree()
+      .then(r => {
+        const data = r.data || []
+        // Sort by defined order, push unknown categories to the end
+        const sorted = [...data].sort((a, b) => {
+          const ai = CATEGORY_ORDER.findIndex(
+            name => name.toLowerCase() === a.name?.toLowerCase()
+          )
+          const bi = CATEGORY_ORDER.findIndex(
+            name => name.toLowerCase() === b.name?.toLowerCase()
+          )
+          const aIndex = ai === -1 ? CATEGORY_ORDER.length : ai
+          const bIndex = bi === -1 ? CATEGORY_ORDER.length : bi
+          return aIndex - bIndex
+        })
+        setCategories(sorted)
+      })
+      .catch(() => {})
   }, [])
 
   useEffect(() => {
