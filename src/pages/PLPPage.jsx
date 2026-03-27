@@ -81,7 +81,8 @@ export default function PLPPage() {
     if (!filters.categoryId) return
     setLoading(true)
 
-    const { brandName, ...apiFilters } = filters
+    // const { brandName, ...apiFilters } = filters
+    const apiFilters = filters
 
     filterProducts({ ...apiFilters, sortBy, page: 0, size: 40 })
       .then(async (r) => {

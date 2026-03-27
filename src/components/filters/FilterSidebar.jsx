@@ -53,12 +53,21 @@ export default function FilterSidebar({ options, filters, onChange }) {
         <Section title="Brand">
           <div className="space-y-2 max-h-44 overflow-y-auto">
             {options.brands.map(b => (
-              <label key={b.value} className="flex items-center gap-2 cursor-pointer group">
-                <input type="checkbox" className="accent-dark rounded"
-                  checked={filters.brandName === b.label}
-                  onChange={() => set('brandName', filters.brandName === b.label ? undefined : b.label)} />
-                <span className="text-sm text-dark group-hover:text-primary flex-1">{b.label} ({b.count})</span>
-                <span className="text-xs text-muted">({b.count})</span>
+              <label key={b.key || b.value} className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  className="accent-dark rounded"
+                  // Fix: compare against b.value not b.label
+                  checked={filters.brandName === b.value}
+                  onChange={() => set(
+                    'brandName',
+                    filters.brandName === b.value ? undefined : b.value
+                  )}
+                />
+                {/* Fix: show label only — removed duplicate count span */}
+                <span className="text-sm text-dark group-hover:text-primary flex-1">
+                  {b.label} ({b.count})
+                </span>
               </label>
             ))}
           </div>
