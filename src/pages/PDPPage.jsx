@@ -235,7 +235,7 @@ export default function PDPPage() {
           <div className="flex flex-wrap gap-2">
             {isLow && <Badge variant="low-stock">Only {stock} left!</Badge>}
             {isOos && <Badge variant="out-of-stock">Out of Stock</Badge>}
-            {selectedVariant?.sku && <span className="text-xs text-muted">SKU: {selectedVariant.sku}</span>}
+            {/*{selectedVariant?.sku && <span className="text-xs text-muted">SKU: {selectedVariant.sku}</span>}*/}
           </div>
 
           {product.availableColors?.length > 0 && (

@@ -99,7 +99,7 @@ export default function FilterSidebar({ options, filters, onChange }) {
                   checked={(filters.colors || []).includes(c.value)}
                   onChange={() => toggle('colors', c.value)} />
                 <span className="text-sm text-dark">{c.label}</span>
-                <span className="text-xs text-muted ml-auto">({c.count})</span>
+                {/* <span className="text-xs text-muted ml-auto">({c.count})</span>*/}
               </label>
             ))}
           </div>
