@@ -209,7 +209,7 @@ export default function Navbar() {
             className="flex flex-col items-center px-3 py-1.5 hover:text-primary transition-colors relative min-w-[52px]"
           >
             <ShoppingBag size={20} />
-            <span className="text-[11px] mt-0.5 font-semibold">Bag</span>
+            <span className="text-[11px] mt-0.5 font-semibold">Cart</span>
             {cartCount > 0 && (
               <span className="absolute top-0.5 right-2 bg-primary text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
                 {cartCount > 9 ? '9+' : cartCount}
